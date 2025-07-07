@@ -25,9 +25,20 @@ console.log('DB_HOST from .env:', process.env.DB_HOST);
 
 // CORS configuration
 app.use(cors({
-  origin: process.env.NODE_ENV === 'development' 
-    ? ['http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1:5173'] 
-    : 'https://sample.in', // your frontend domain
+  origin: (origin, callback) => {
+    const allowedOrigins = [
+      'http://localhost:5173',
+      'http://localhost:3000',
+      'http://127.0.0.1:5173',
+      'https://sample.in', // ✅ your production domain
+    ];
+
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true); // Allow request
+    } else {
+      callback(new Error('CORS policy does not allow this origin.'));
+    }
+  },
   credentials: true
 }));
 app.options('*', cors({
