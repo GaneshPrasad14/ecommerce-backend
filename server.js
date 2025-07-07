@@ -23,14 +23,13 @@ const PORT = process.env.PORT || 5000;
 
 console.log('DB_HOST from .env:', process.env.DB_HOST);
 
-// CORS configuration (must be before any other middleware or routes)
+// CORS configuration
 app.use(cors({
   origin: process.env.NODE_ENV === 'development' 
     ? ['http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1:5173'] 
     : 'https://sample.in', // your frontend domain
   credentials: true
 }));
-// Handle preflight requests for all routes
 app.options('*', cors({
   origin: (origin, callback) => callback(null, true),
   credentials: true
@@ -72,7 +71,16 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Error handling middleware
+// ✅ Base route for sanity check
+app.get('/', (req, res) => {
+  res.send({
+    status: 'success',
+    message: 'Ecommerce backend is live!',
+    documentation: '/api/health'
+  });
+});
+
+// Global error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ 
@@ -90,4 +98,4 @@ app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📊 Admin API: http://localhost:${PORT}/api`);
   console.log(`🏥 Health check: http://localhost:${PORT}/api/health`);
-}); 
+});
