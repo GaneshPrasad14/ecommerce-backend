@@ -30,7 +30,8 @@ app.use(cors({
       'http://localhost:5173',
       'http://localhost:3000',
       'http://127.0.0.1:5173',
-      'https://sample.in', // ✅ your production domain
+      'https://sample.in', // ✅ your old production domain
+      'https://sampleone.in', // ✅ GoDaddy domain (replace with your actual domain)
     ];
 
     if (!origin || allowedOrigins.includes(origin)) {
