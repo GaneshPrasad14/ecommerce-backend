@@ -9,6 +9,14 @@ const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 const { testConnection, initializeDatabase } = require('./config/database');
 const path = require('path');
+const fs = require('fs');
+
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, '../uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+  console.log('Created uploads directory:', uploadsDir);
+}
 
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
