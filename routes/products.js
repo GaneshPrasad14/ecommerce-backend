@@ -17,11 +17,15 @@ const storage = multer.diskStorage({
     cb(null, uniqueSuffix + '-' + file.originalname.replace(/\s+/g, '_'));
   }
 });
-const upload = multer({ storage });
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB
+});
 
 // Image upload endpoint
 router.post('/upload', upload.single('image'), (req, res) => {
   if (!req.file) {
+    console.error('No file uploaded or multer error');
     return res.status(400).json({ error: 'No file uploaded' });
   }
   // Return the URL to access the uploaded image
@@ -273,8 +277,8 @@ router.put('/:id', [
 
     // Update product
     await pool.execute(`
-      UPDATE products 
-      SET name = ?, description = ?, price = ?, original_price = ?, 
+      UPDATE products
+      SET name = ?, description = ?, price = ?, original_price = ?,
           sku = ?, stock_quantity = ?, is_featured = ?
       WHERE id = ?
     `, [name, description, price, original_price, sku, stock_quantity, is_featured, id]);
