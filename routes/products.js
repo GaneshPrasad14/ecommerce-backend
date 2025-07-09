@@ -221,6 +221,12 @@ router.post('/', [
           VALUES (?, ?, ?, ?, ?)
         `, [productId, image.url, image.alt_text, image.is_primary || false, i]);
       }
+    } else {
+      // Fallback: insert a default image if none provided
+      await pool.execute(`
+        INSERT INTO product_images (product_id, image_url, alt_text, is_primary, sort_order)
+        VALUES (?, ?, ?, ?, ?)
+      `, [productId, '/placeholder.jpg', name || 'Product', true, 0]);
     }
 
     // Remove variants block (no longer used)
