@@ -26,9 +26,10 @@ router.post('/login', [
       return res.status(401).json({ error: 'Invalid credentials' });
     }
     const payload = { user: { id: user.id, username: user.username } };
-    const token = jwt.sign(payload, process.env.JWT_SECRET || 'your-secret-key', { expiresIn: '7d' });
+    const token = jwt.sign(payload, process.env.JWT_SECRET || 'SaiGame@ecommerce', { expiresIn: '7d' });
     res.json({ token });
   } catch (error) {
+    console.error('Login error:', error);
     res.status(500).json({ error: 'Server error' });
   }
 });
