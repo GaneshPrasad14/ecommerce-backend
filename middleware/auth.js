@@ -18,7 +18,7 @@ module.exports = function(req, res, next) {
 
   try {
     // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'SaiGame@ecommerce');
     req.user = decoded.user;
     next();
   } catch (err) {
