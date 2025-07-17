@@ -48,4 +48,4 @@ exports.updateSubcategory = async (id, body) => {
 exports.deleteSubcategory = async (id) => {
   const [result] = await db.execute('DELETE FROM subcategories WHERE id = ?', [id]);
   return result.affectedRows > 0;
-}; 
+};
