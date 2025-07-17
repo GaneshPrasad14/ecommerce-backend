@@ -13,4 +13,4 @@ exports.createUser = async (email, password, name) => {
 exports.findById = async (id) => {
   const [rows] = await db.execute('SELECT id, email, name, role FROM users WHERE id = ?', [id]);
   return rows[0];
-}; 
+};
