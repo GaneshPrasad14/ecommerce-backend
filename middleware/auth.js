@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const JWT_SECRET = process.env.JWT_SECRET || 'your-jwt-secret-key';
+const JWT_SECRET = process.env.JWT_SECRET || 'SaiGame@ecommerce';
 
 module.exports = function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
@@ -10,4 +10,4 @@ module.exports = function authenticateToken(req, res, next) {
     req.user = user;
     next();
   });
-}; 
+};
