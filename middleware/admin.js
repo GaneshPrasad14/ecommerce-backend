@@ -3,4 +3,4 @@ module.exports = function requireAdmin(req, res, next) {
     return res.status(403).json({ error: 'Admin access required' });
   }
   next();
-}; 
+};
