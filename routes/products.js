@@ -18,4 +18,4 @@ router.post('/', authenticateToken, requireAdmin, upload.single('image'), produc
 router.put('/:id', authenticateToken, requireAdmin, upload.single('image'), productController.updateProduct);
 router.delete('/:id', authenticateToken, requireAdmin, productController.deleteProduct);
 
-module.exports = router;
+module.exports = router; 
