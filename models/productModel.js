@@ -3,8 +3,8 @@ const db = require('../db');
 exports.getProducts = async (query) => {
   const { category, subcategory, search } = query;
   let sql = `SELECT p.*, s.name AS subcategory_name, c.name AS category_name FROM products p
-             JOIN subcategories s ON p.subcategory_id = s.id
-             JOIN categories c ON s.category_id = c.id`;
+             LEFT JOIN subcategories s ON p.subcategory_id = s.id
+             LEFT JOIN categories c ON s.category_id = c.id`;
   const params = [];
   const conditions = [];
   if (category) {
@@ -30,8 +30,8 @@ exports.getProducts = async (query) => {
 exports.getProductById = async (id) => {
   const [rows] = await db.execute(
     `SELECT p.*, s.name AS subcategory_name, c.name AS category_name FROM products p
-     JOIN subcategories s ON p.subcategory_id = s.id
-     JOIN categories c ON s.category_id = c.id
+     LEFT JOIN subcategories s ON p.subcategory_id = s.id
+     LEFT JOIN categories c ON s.category_id = c.id
      WHERE p.id = ?`,
     [id]
   );
@@ -39,28 +39,28 @@ exports.getProductById = async (id) => {
 };
 
 exports.createProduct = async (body, file) => {
-  const { name, subcategory_id, price, description, stock, rent_available } = body;
+  const { name, subcategory_id, price, description, stock, rent_available, contact } = body;
   const image = file ? `/uploads/${file.filename}` : null;
   const [result] = await db.execute(
-    `INSERT INTO products (name, subcategory_id, price, description, stock, rent_available, image)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`,
-    [name, subcategory_id, parseFloat(price), description, parseInt(stock), rent_available === 'true', image]
+    `INSERT INTO products (name, subcategory_id, price, description, stock, rent_available, image, contact)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    [name, subcategory_id, parseFloat(price), description, parseInt(stock), rent_available === 'true', image, contact]
   );
   const [rows] = await db.execute('SELECT * FROM products WHERE id = ?', [result.insertId]);
   return rows[0];
 };
 
 exports.updateProduct = async (id, body, file) => {
-  const { name, subcategory_id, price, description, stock, rent_available } = body;
+  const { name, subcategory_id, price, description, stock, rent_available, contact } = body;
   let imageUpdate = '';
-  let params = [name, subcategory_id, parseFloat(price), description, parseInt(stock), rent_available === 'true'];
+  let params = [name, subcategory_id, parseFloat(price), description, parseInt(stock), rent_available === 'true', contact];
   if (file) {
     imageUpdate = ', image = ?';
     params.push(`/uploads/${file.filename}`);
   }
   params.push(id);
   const [result] = await db.execute(
-    `UPDATE products SET name = ?, subcategory_id = ?, price = ?, description = ?, stock = ?, rent_available = ?${imageUpdate} WHERE id = ?`,
+    `UPDATE products SET name = ?, subcategory_id = ?, price = ?, description = ?, stock = ?, rent_available = ?, contact = ?${imageUpdate} WHERE id = ?`,
     params
   );
   if (result.affectedRows === 0) return null;
@@ -71,4 +71,4 @@ exports.updateProduct = async (id, body, file) => {
 exports.deleteProduct = async (id) => {
   const [result] = await db.execute('DELETE FROM products WHERE id = ?', [id]);
   return result.affectedRows > 0;
-};
+}; 
