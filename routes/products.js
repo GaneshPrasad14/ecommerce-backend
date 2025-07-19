@@ -18,4 +18,19 @@ router.post('/', authenticateToken, requireAdmin, upload.single('image'), produc
 router.put('/:id', authenticateToken, requireAdmin, upload.single('image'), productController.updateProduct);
 router.delete('/:id', authenticateToken, requireAdmin, productController.deleteProduct);
 
+// Serve product image as BLOB from database
+router.get('/:id/image', async (req, res) => {
+  try {
+    const db = require('../db');
+    const [rows] = await db.execute('SELECT image_blob FROM products WHERE id = ?', [req.params.id]);
+    if (!rows.length || !rows[0].image_blob) {
+      return res.status(404).send('Image not found');
+    }
+    res.set('Content-Type', 'image/jpeg'); // You may want to store and use the actual mime type
+    res.send(rows[0].image_blob);
+  } catch (err) {
+    res.status(500).send('Server error');
+  }
+});
+
 module.exports = router; 
