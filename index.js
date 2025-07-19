@@ -27,7 +27,7 @@ app.use(express.urlencoded({ extended: true }));
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 1000, // limit each IP to 100 requests per windowMs
+  max: 1000, // increased limit for production
 });
 app.use(limiter);
 
@@ -36,7 +36,10 @@ const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
-app.use('/uploads', express.static(uploadsDir));
+app.use('/uploads', (req, res, next) => {
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+  next();
+}, express.static(uploadsDir));
 
 // Routers
 const authRoutes = require('./routes/auth');
