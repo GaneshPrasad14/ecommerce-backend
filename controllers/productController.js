@@ -20,7 +20,10 @@ exports.getProductById = async (req, res) => {
 };
 
 exports.createProduct = async (req, res) => {
-    try {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'Product image is required.' });
+    }
     const product = await productModel.createProduct(req.body, req.file);
     res.status(201).json(product);
   } catch (error) {
