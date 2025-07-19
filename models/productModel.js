@@ -41,10 +41,11 @@ exports.getProductById = async (id) => {
 exports.createProduct = async (body, file) => {
   const { name, subcategory_id, price, description, stock, rent_available, contact } = body;
   const image = file ? `/uploads/${file.filename}` : null;
+  const image_blob = file ? file.buffer : null;
   const [result] = await db.execute(
-    `INSERT INTO products (name, subcategory_id, price, description, stock, rent_available, image, contact)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-    [name, subcategory_id, parseFloat(price), description, parseInt(stock), rent_available === 'true', image, contact]
+    `INSERT INTO products (name, subcategory_id, price, description, stock, rent_available, image, image_blob, contact)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [name, subcategory_id, parseFloat(price), description, parseInt(stock), rent_available === 'true', image, image_blob, contact]
   );
   const [rows] = await db.execute('SELECT * FROM products WHERE id = ?', [result.insertId]);
   return rows[0];
@@ -53,14 +54,17 @@ exports.createProduct = async (body, file) => {
 exports.updateProduct = async (id, body, file) => {
   const { name, subcategory_id, price, description, stock, rent_available, contact } = body;
   let imageUpdate = '';
+  let imageBlobUpdate = '';
   let params = [name, subcategory_id, parseFloat(price), description, parseInt(stock), rent_available === 'true', contact];
   if (file) {
     imageUpdate = ', image = ?';
+    imageBlobUpdate = ', image_blob = ?';
     params.push(`/uploads/${file.filename}`);
+    params.push(file.buffer);
   }
   params.push(id);
   const [result] = await db.execute(
-    `UPDATE products SET name = ?, subcategory_id = ?, price = ?, description = ?, stock = ?, rent_available = ?, contact = ?${imageUpdate} WHERE id = ?`,
+    `UPDATE products SET name = ?, subcategory_id = ?, price = ?, description = ?, stock = ?, rent_available = ?, contact = ?${imageUpdate}${imageBlobUpdate} WHERE id = ?`,
     params
   );
   if (result.affectedRows === 0) return null;
@@ -71,4 +75,4 @@ exports.updateProduct = async (id, body, file) => {
 exports.deleteProduct = async (id) => {
   const [result] = await db.execute('DELETE FROM products WHERE id = ?', [id]);
   return result.affectedRows > 0;
-}; 
+};
