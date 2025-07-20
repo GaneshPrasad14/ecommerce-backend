@@ -75,4 +75,4 @@ exports.updateProduct = async (id, body, file) => {
 exports.deleteProduct = async (id) => {
   const [result] = await db.execute('DELETE FROM products WHERE id = ?', [id]);
   return result.affectedRows > 0;
-};
+}; 
