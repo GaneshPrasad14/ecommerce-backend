@@ -1,4 +1,7 @@
 const productModel = require('../models/productModel');
+const fs = require('fs');
+const path = require('path');
+const uploadsDir = path.join(__dirname, '../uploads');
 
 exports.getProducts = async (req, res) => {
   try {
@@ -24,6 +27,15 @@ exports.createProduct = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ error: 'Product image is required.' });
     }
+    // Save file to disk for old logic
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+    const filename = 'image-' + Date.now() + path.extname(req.file.originalname);
+    const filepath = path.join(uploadsDir, filename);
+    fs.writeFileSync(filepath, req.file.buffer);
+    req.file.filename = filename; // for old logic
+    // req.file.buffer is already set for BLOB
     const product = await productModel.createProduct(req.body, req.file);
     res.status(201).json(product);
   } catch (error) {
@@ -34,7 +46,17 @@ exports.createProduct = async (req, res) => {
 
 exports.updateProduct = async (req, res) => {
   try {
-    const product = await productModel.updateProduct(req.params.id, req.body, req.file);
+    let file = req.file;
+    if (file) {
+      if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
+      }
+      const filename = 'image-' + Date.now() + path.extname(file.originalname);
+      const filepath = path.join(uploadsDir, filename);
+      fs.writeFileSync(filepath, file.buffer);
+      file.filename = filename;
+    }
+    const product = await productModel.updateProduct(req.params.id, req.body, file);
     if (!product) return res.status(404).json({ error: 'Product not found' });
     res.json(product);
   } catch (error) {
