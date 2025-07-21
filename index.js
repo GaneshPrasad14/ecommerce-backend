@@ -27,7 +27,7 @@ app.use(express.urlencoded({ extended: true }));
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 1000, // increased limit for production
+  max: 10000, // increased limit for production
 });
 app.use(limiter);
 
