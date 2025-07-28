@@ -5,6 +5,14 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
 const fs = require('fs');
+const cloudinary = require('cloudinary').v2;
+
+// Cloudinary configuration
+cloudinary.config({
+  cloud_name: 'dng4vzcnu',
+  api_key: '547857884443852',
+  api_secret: 'G85GycZ34GOGrmQ1YO1XIo4ZEJY'
+});
 
 const app = express();
 const PORT = process.env.PORT || 5000;
