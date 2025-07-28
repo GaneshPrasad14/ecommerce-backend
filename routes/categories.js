@@ -16,4 +16,4 @@ router.post('/:categoryId/subcategories', authenticateToken, requireAdmin, categ
 router.put('/subcategories/:id', authenticateToken, requireAdmin, categoryController.updateSubcategory);
 router.delete('/subcategories/:id', authenticateToken, requireAdmin, categoryController.deleteSubcategory);
 
-module.exports = router; 
+module.exports = router;
