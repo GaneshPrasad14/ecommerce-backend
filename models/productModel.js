@@ -38,17 +38,16 @@ exports.getProductById = async (id) => {
   return rows[0];
 };
 
-exports.createProduct = async (body, file) => {
+exports.createProduct = async (body, file, imageUrl) => {
   const { name, subcategory_id, price, description, stock, rent_available, contact } = body;
-  const image = file ? `/uploads/${file.filename}` : null;
+  const image = imageUrl || (file ? `/uploads/${file.filename}` : null);
   const image_blob = file ? file.buffer : null;
   const [result] = await db.execute(
     `INSERT INTO products (name, subcategory_id, price, description, stock, rent_available, image, image_blob, contact)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [name, subcategory_id, parseFloat(price), description, parseInt(stock), rent_available === 'true', image, image_blob, contact]
   );
-  const [rows] = await db.execute('SELECT * FROM products WHERE id = ?', [result.insertId]);
-  return rows[0];
+  return { id: result.insertId, name, subcategory_id, price, description, stock, rent_available, image, contact };
 };
 
 exports.updateProduct = async (id, body, file) => {
@@ -75,4 +74,4 @@ exports.updateProduct = async (id, body, file) => {
 exports.deleteProduct = async (id) => {
   const [result] = await db.execute('DELETE FROM products WHERE id = ?', [id]);
   return result.affectedRows > 0;
-}; 
+};
